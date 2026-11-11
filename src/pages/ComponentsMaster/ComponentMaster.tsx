@@ -1,10 +1,3 @@
-<<<<<<< Updated upstream
-import { Box, Button, Container, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import React from 'react'
-
-function ComponentMaster() {
-=======
 import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Autocomplete, TextField, Typography, Alert, IconButton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useState } from 'react';
@@ -150,7 +143,6 @@ function ComponentMaster() {
         }
     }
 
->>>>>>> Stashed changes
     return (
         <Container >
             <Box sx={{
@@ -168,7 +160,7 @@ function ComponentMaster() {
                     }}>Component master</Typography>
                     <Button id="btn" variant="contained" sx={{
                         textTransform: "capitalize"
-                    }}>Add component</Button>
+                    }} onClick={handleAddComponent}>Add component</Button>
                 </Box>
 
                 <Box sx={{
@@ -176,13 +168,6 @@ function ComponentMaster() {
                 }}>
                     <DataGrid
                         showToolbar
-<<<<<<< Updated upstream
-                        rows={[]}
-                        columns={[]}
-                    />
-                </Box>
-            </Box>
-=======
                         rows={rows}
                         columns={[...columns, ...columnsActions]}
                     />
@@ -244,7 +229,6 @@ function ComponentMaster() {
                     }} onClick={createComponentFunction}>{editingId ? "Save" : "Add"}</Button>
                 </DialogActions>
             </Dialog>
->>>>>>> Stashed changes
         </Container>
     )
 }
