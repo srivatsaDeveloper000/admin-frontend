@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import api from '../../api services/api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
+import type { component_master_type } from '../../types/component_master';
 
 type rowsData = {
     headerName: string,
@@ -29,10 +30,11 @@ function ComponentMaster() {
     const [parentComponents, setParentComponents] = React.useState<string[]>([]);
     const [createdBy, setCreatedBy] = useState<string[]>([])
     const [loading, setLoading] = React.useState<boolean>(false);
-    const [componentData, setComponentData] = React.useState({
+    const [componentData, setComponentData] = React.useState<component_master_type>({
         component_name: "",
         created_by: "",
-        parent_component: ""
+        parent_component: "",
+        role: ""
     })
     const [editingId, setEditingId] = React.useState<string | null>(null);
 
@@ -46,7 +48,8 @@ function ComponentMaster() {
         setComponentData({
             component_name: row.component_name ?? "",
             created_by: row.created_by ?? "",
-            parent_component: row.parent_component ?? ""
+            parent_component: row.parent_component ?? "",
+            role: ""
         });
         setShowAddComponents(true);
     };
