@@ -4,23 +4,7 @@ import React, { useState } from 'react';
 import api from '../../api services/api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import type { component_master_type } from '../../types/component_master';
-
-type rowsData = {
-    headerName: string,
-    width: number,
-    field: string
-}
-
-type severityType = "success" | "error" | "info" | "warning";
-
-type responseDataType = {
-    type: severityType,
-    message: string,
-    componentData: {
-        data: Record<string, any>[],
-    }
-}
+import type { component_master_type, rowsData, severityType, responseDataType } from '../../types/component_master_types';
 
 function ComponentMaster() {
 
@@ -28,14 +12,15 @@ function ComponentMaster() {
     const [rows, setRows] = React.useState<Record<string, any>[]>([]);
     const [showAddComponent, setShowAddComponents] = React.useState<boolean>(false);
     const [parentComponents, setParentComponents] = React.useState<string[]>([]);
+    const [userRoles, setUserRoles] = useState<string[]>([]);
     const [createdBy, setCreatedBy] = useState<string[]>([])
     const [loading, setLoading] = React.useState<boolean>(false);
     const [componentData, setComponentData] = React.useState<component_master_type>({
         component_name: "",
         created_by: "",
         parent_component: "",
-        role: ""
-    })
+        user_role: ""
+    });
     const [editingId, setEditingId] = React.useState<string | null>(null);
 
     //  for showing the success and fialure of creating the component
@@ -49,7 +34,7 @@ function ComponentMaster() {
             component_name: row.component_name ?? "",
             created_by: row.created_by ?? "",
             parent_component: row.parent_component ?? "",
-            role: ""
+            user_role: ""
         });
         setShowAddComponents(true);
     };
@@ -106,17 +91,20 @@ function ComponentMaster() {
                 }));
                 setParentComponents(data.map((item: any) => item.parent_component));
                 setCreatedBy(data.map((item: any) => item.created_by));
+                setUserRoles(data.map((item: any) => item.user_roles));
                 setColumns([...ColumnsData])
                 setRows(data.map(({ _id, ...row }: Record<string, any>) => ({
                     ...row,
                     id: _id
                 })));
             } catch (error: any) {
-                console.log(error.message)
+                console.log(error.message);
             }
-        }
+        }  
         fetchComponentsData();
-    }, [])
+
+        return () => {};
+    }, []);
 
     //  function to createa component
     const createComponentFunction = async (): Promise<void> => {
@@ -131,7 +119,7 @@ function ComponentMaster() {
             const type = responseData.type.toLowerCase();
             if (["success", "error", "warning", "info"].includes(type)) {
                 setResponseType(type as severityType);
-            }
+            };
             setTimeout(() => {
                 setShowResponse(false)
                 setResponseMessage("");
@@ -197,7 +185,7 @@ function ComponentMaster() {
 
                     <Autocomplete
                         disablePortal
-                        options={parentComponents}
+                        options={[...new Set(parentComponents)]}
                         sx={{ mt: 2 }}
                         value={componentData.parent_component}
                         onInputChange={(_: any, newValue: string) => {
@@ -214,13 +202,24 @@ function ComponentMaster() {
 
                     <Autocomplete
                         disablePortal
-                        options={createdBy}
+                        options={[...new Set(createdBy)]}
                         sx={{ mt: 2 }}
                         value={componentData.created_by}
                         onInputChange={(_: any, newValue: string) => {
                             setComponentData({ ...componentData, created_by: newValue || "" });
                         }}
                         renderInput={(params: any) => <TextField {...params} label="Created by" fullWidth />}
+                    />
+
+                    <Autocomplete
+                        disablePortal
+                        options={[...new Set(userRoles)]}
+                        sx={{ mt: 2 }}
+                        value={componentData.created_by}
+                        onInputChange={(_: any, newValue: string) => {
+                            setComponentData({ ...componentData, user_role: newValue || "" });
+                        }}
+                        renderInput={(params: any) => <TextField {...params} label="User role" fullWidth />}
                     />
                 </DialogContent>
                 <DialogActions >
