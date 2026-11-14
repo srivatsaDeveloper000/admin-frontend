@@ -187,7 +187,6 @@ function ComponentMaster() {
                         sx={{ mt: 2 }}
                         value={componentData.parent_component}
                         onInputChange={(_: any, newValue: string) => {
-                            console.log("newValue", newValue)
                             setComponentData({ ...componentData, parent_component: newValue || "" });
                         }}
                         renderInput={(params: any) =>

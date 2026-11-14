@@ -8,7 +8,6 @@ function Dashboard() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [showErrors, setShowErrors] = useState<boolean>(false);
     const [componentCounts, setComponentCounts] = useState<Record<string, any>[]>([]);
-    const [userRoleCounts , setUserRoleCounts] = useState<[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {

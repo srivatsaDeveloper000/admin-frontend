@@ -1,0 +1,1 @@
+export type severityType = "success" | "info" | "warning" | "error"
