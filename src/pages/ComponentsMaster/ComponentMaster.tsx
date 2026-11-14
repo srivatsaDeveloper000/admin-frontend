@@ -12,7 +12,7 @@ function ComponentMaster() {
     const [rows, setRows] = React.useState<Record<string, any>[]>([]);
     const [showAddComponent, setShowAddComponents] = React.useState<boolean>(false);
     const [parentComponents, setParentComponents] = React.useState<string[]>([]);
-    const [userRoles, setUserRoles] = useState<string[]>([]);
+    const [userRoles, setUserRoles] = useState<string[]>(["Developer", "Admin"]);
     const [createdBy, setCreatedBy] = useState<string[]>([])
     const [loading, setLoading] = React.useState<boolean>(false);
     const [componentData, setComponentData] = React.useState<component_master_type>({
@@ -91,7 +91,7 @@ function ComponentMaster() {
                 }));
                 setParentComponents(data.map((item: any) => item.parent_component));
                 setCreatedBy(data.map((item: any) => item.created_by));
-                setUserRoles(data.map((item: any) => item.user_roles));
+                // setUserRoles(data.map((item: any) => item.user_roles));
                 setColumns([...ColumnsData])
                 setRows(data.map(({ _id, ...row }: Record<string, any>) => ({
                     ...row,
@@ -100,19 +100,17 @@ function ComponentMaster() {
             } catch (error: any) {
                 console.log(error.message);
             }
-        }  
+        }
         fetchComponentsData();
 
-        return () => {};
+        return () => { };
     }, []);
 
     //  function to createa component
     const createComponentFunction = async (): Promise<void> => {
         try {
             setLoading(true)
-            const responseData: responseDataType = editingId
-                ? await api.put(`/update_component/${editingId}`, componentData)
-                : await api.post("/create_component", componentData);
+            const responseData: responseDataType = await api.post("/create_component", componentData);
             setLoading(false);
             setShowResponse(true);
             setResponseMessage(responseData.message);
@@ -215,7 +213,7 @@ function ComponentMaster() {
                         disablePortal
                         options={[...new Set(userRoles)]}
                         sx={{ mt: 2 }}
-                        value={componentData.created_by}
+                        value={componentData.user_role}
                         onInputChange={(_: any, newValue: string) => {
                             setComponentData({ ...componentData, user_role: newValue || "" });
                         }}
