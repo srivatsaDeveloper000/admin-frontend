@@ -21,23 +21,6 @@ function ComponentMaster() {
 
     const [columns, setColumns] = React.useState<rowsData[]>([]);
     const [rows, setRows] = React.useState<Record<string, any>[]>([]);
-    const [showAddComponent, setSetShowComponents] = React.useState<boolean>(false);
-    const [parentComponents, setParentComponents] = React.useState<string[]>([]);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [componentData, setComponentData] = React.useState({
-        componentName: "",
-        created_by: "",
-        parent_component: ""
-    })
-
-    //  for opening the add component dialog
-    const handleAddComponent = () => {
-        setSetShowComponents(true);
-    }loading
-
-    // for getting the components data
-    React.useEffect(() => {
-        const fetchComponentsData = async () => {
             const responseData: responseDataType = await api.get("/components_data");
             const ColumnsData = responseData?.componentData.data[0].map((item: any) => ({
                 headerName: item.headerName,
