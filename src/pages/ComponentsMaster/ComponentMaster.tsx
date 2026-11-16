@@ -5,6 +5,7 @@ import api from '../../api services/api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import type { component_master_type, rowsData, severityType, responseDataType } from '../../types/component_master_types';
+import Sidebar from '../../componnets/Sidebar';
 
 function ComponentMaster() {
 
@@ -21,7 +22,7 @@ function ComponentMaster() {
         parent_component: "",
         user_role: ""
     });
-    const [editingId, setEditingId] = React.useState<string | null>(null);
+    const [isEdit, setIsEdit] = useState<boolean>(false);
 
     //  for showing the success and fialure of creating the component
     const [showResponse, setShowResponse] = useState<boolean>(false);
@@ -29,7 +30,7 @@ function ComponentMaster() {
     const [responseMessage, setResponseMessage] = useState<string>("");
 
     const handleEdit = (row: Record<string, any>) => {
-        setEditingId(row.id);
+        setIsEdit(true);
         setComponentData({
             component_name: row.component_name ?? "",
             created_by: row.created_by ?? "",
@@ -125,7 +126,7 @@ function ComponentMaster() {
             }, 3000);
             if (responseData.type === "success") {
                 setShowAddComponents(false);
-                setEditingId(null);
+                setIsEdit(null);
             }
         } catch (error: any) {
             console.log("error : ", error.message)
@@ -133,102 +134,114 @@ function ComponentMaster() {
     }
 
     return (
-        <Container >
+        <Box sx={{
+            display: "flex"
+        }}>
             <Box sx={{
-                flex: 1,
-                height: "100vh",
-                padding: "20px",
+                width: "3%",
+                backgroundColor: "green",
+                height: "100vh"
+            }}>
+                <Sidebar />
+            </Box>
+            <Box sx={{
+                flex: 1
             }}>
                 <Box sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
+                    flex: 1,
+                    height: "100vh",
                 }}>
-                    <Typography variant="h5" sx={{
-                        fontWeight: "bold"
-                    }}>Component master</Typography>
-                    <Button id="btn" variant="contained" sx={{
-                        textTransform: "capitalize"
-                    }} onClick={handleAddComponent}>Add component</Button>
+                    <Box sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}>
+                        <Typography variant="h5" sx={{
+                            fontWeight: "bold"
+                        }}>Component master</Typography>
+                        <Button id="btn" variant="contained" sx={{
+                            textTransform: "capitalize"
+                        }} onClick={handleAddComponent}>Add component</Button>
+                    </Box>
+
+                    <Box sx={{
+                        mt: 2
+                    }}>
+                        <DataGrid
+                            showToolbar
+                            rows={rows}
+                            columns={[...columns, ...columnsActions]}
+                        />
+                    </Box>
                 </Box>
 
-                <Box sx={{
-                    mt: 2
-                }}>
-                    <DataGrid
-                        showToolbar
-                        rows={rows}
-                        columns={[...columns, ...columnsActions]}
-                    />
-                </Box>
+                <Dialog
+                    open={showAddComponent}
+                    onClose={() => setShowAddComponents(false)}
+                    fullWidth
+                    maxWidth="sm"
+                >
+                    <DialogTitle>{isEdit ? "Edit component" : "Add component"}</DialogTitle>
+                    <DialogContent>
+                        {showResponse && <Alert severity={responseType}>
+                            {responseMessage}
+                        </Alert>}
+                        <TextField
+                            label="Component name"
+                            fullWidth
+                            value={componentData.component_name}
+                            onChange={(event) => { setComponentData({ ...componentData, component_name: event.target.value }) }}
+                        />
+
+                        <Autocomplete
+                            disablePortal
+                            options={[...new Set(parentComponents)]}
+                            sx={{ mt: 2 }}
+                            value={componentData.parent_component}
+                            onInputChange={(_: any, newValue: string) => {
+                                setComponentData({ ...componentData, parent_component: newValue || "" });
+                            }}
+                            renderInput={(params: any) =>
+                                <TextField
+                                    {...params}
+                                    label="Parent component"
+                                    fullWidth
+                                />}
+                        />
+
+                        <Autocomplete
+                            disablePortal
+                            options={[...new Set(createdBy)]}
+                            sx={{ mt: 2 }}
+                            value={componentData.created_by}
+                            onInputChange={(_: any, newValue: string) => {
+                                setComponentData({ ...componentData, created_by: newValue || "" });
+                            }}
+                            renderInput={(params: any) => <TextField {...params} label="Created by" fullWidth />}
+                        />
+
+                        <Autocomplete
+                            disablePortal
+                            options={[...new Set(userRoles)]}
+                            sx={{ mt: 2 }}
+                            value={componentData.user_role}
+                            onInputChange={(_: any, newValue: string) => {
+                                setComponentData({ ...componentData, user_role: newValue || "" });
+                            }}
+                            renderInput={(params: any) => <TextField {...params} label="User role" fullWidth />}
+                        />
+                    </DialogContent>
+                    <DialogActions >
+                        <Button variant="contained" sx={{
+                            textTransform: "capitalize"
+                        }} onClick={() => { setShowAddComponents(false); setIsEdit(false); }}>Cancel</Button>
+                        <Button loading={loading} variant="contained" sx={{
+                            textTransform: "capitalize"
+                        }} onClick={createComponentFunction}>{isEdit ? "Save" : "Add"}</Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
-
-            <Dialog
-                open={showAddComponent}
-                onClose={() => setShowAddComponents(false)}
-                fullWidth
-                maxWidth="sm"
-            >
-                <DialogTitle>{editingId ? "Edit component" : "Add component"}</DialogTitle>
-                <DialogContent>
-                    {showResponse && <Alert severity={responseType}>
-                        {responseMessage}
-                    </Alert>}
-                    <TextField
-                        label="Component name"
-                        fullWidth
-                        value={componentData.component_name}
-                        onChange={(event) => { setComponentData({ ...componentData, component_name: event.target.value }) }}
-                    />
-
-                    <Autocomplete
-                        disablePortal
-                        options={[...new Set(parentComponents)]}
-                        sx={{ mt: 2 }}
-                        value={componentData.parent_component}
-                        onInputChange={(_: any, newValue: string) => {
-                            setComponentData({ ...componentData, parent_component: newValue || "" });
-                        }}
-                        renderInput={(params: any) =>
-                            <TextField
-                                {...params}
-                                label="Parent component"
-                                fullWidth
-                            />}
-                    />
-
-                    <Autocomplete
-                        disablePortal
-                        options={[...new Set(createdBy)]}
-                        sx={{ mt: 2 }}
-                        value={componentData.created_by}
-                        onInputChange={(_: any, newValue: string) => {
-                            setComponentData({ ...componentData, created_by: newValue || "" });
-                        }}
-                        renderInput={(params: any) => <TextField {...params} label="Created by" fullWidth />}
-                    />
-
-                    <Autocomplete
-                        disablePortal
-                        options={[...new Set(userRoles)]}
-                        sx={{ mt: 2 }}
-                        value={componentData.user_role}
-                        onInputChange={(_: any, newValue: string) => {
-                            setComponentData({ ...componentData, user_role: newValue || "" });
-                        }}
-                        renderInput={(params: any) => <TextField {...params} label="User role" fullWidth />}
-                    />
-                </DialogContent>
-                <DialogActions >
-                    <Button variant="contained" sx={{
-                        textTransform: "capitalize"
-                    }} onClick={() => { setShowAddComponents(false); setEditingId(null); }}>Cancel</Button>
-                    <Button loading={loading} variant="contained" sx={{
-                        textTransform: "capitalize"
-                    }} onClick={createComponentFunction}>{editingId ? "Save" : "Add"}</Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+        </Box>
     )
 }
 
