@@ -3,6 +3,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
 import { useNavigate } from 'react-router-dom';
+import HttpsIcon from '@mui/icons-material/Https';
 
 function Sidebar() {
 
@@ -28,6 +29,11 @@ function Sidebar() {
             <Box>
                 <Tooltip title="Components master">
                     <SettingsInputComponentIcon onClick={() =>{navigate("/component_master")}} sx={{ color: "white", cursor: "pointer", height: "100px" }} />
+                </Tooltip>
+            </Box>
+            <Box>
+                <Tooltip title="Log master">
+                    <HttpsIcon onClick={() =>{navigate("/log_master")}} sx={{ color: "white", cursor: "pointer", height: "100px" }} />
                 </Tooltip>
             </Box>
         </Box>

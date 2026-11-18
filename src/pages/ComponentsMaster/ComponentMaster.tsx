@@ -3,7 +3,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import api from '../../api services/api';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditSquareIcon from '@mui/icons-material/EditSquare';
 import type { component_master_type, rowsData, severityType, responseDataType } from '../../types/component_master_types';
 import Sidebar from '../../componnets/Sidebar';
 
@@ -22,7 +21,6 @@ function ComponentMaster() {
         parent_component: "",
         user_role: ""
     });
-    const [editingId, setEditingId] = React.useState<string | null>(null);
     const [showDelete, setShowDelete] = useState<boolean>(false);
     const [deleteComponentName, setShowDeleteComponentName] = useState<string>("");
     const [deleteComponentId, setDeleteComponentId] = useState<string>("");

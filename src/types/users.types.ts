@@ -3,5 +3,6 @@ export type userTypes = {
     user_role : string,
     user_name : string,
     password : string,
-    email : string
+    email : string ,
+    contact_number : string
 }
