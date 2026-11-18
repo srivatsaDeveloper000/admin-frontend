@@ -2,6 +2,7 @@ import { Container, Box, Dialog, DialogContentText, CircularProgress } from '@mu
 import { useEffect, useState } from 'react'
 import ColumnBar from '../../charts/ColumnBar';
 import api from '../../api services/api';
+import Sidebar from '../../componnets/Sidebar';
 
 function Dashboard() {
 
@@ -34,8 +35,19 @@ function Dashboard() {
     }, []);
 
     return (
-        <Container>
-            <Box>
+        <Box sx={{
+            display :"flex" 
+        }}>
+            <Box sx={{
+                width :"3%" ,
+                backgroundColor :"green",
+                height :"100vh"
+            }}>
+                <Sidebar />
+            </Box>
+            <Box sx={{
+                flex : 1
+            }}>
                 {loading ? <CircularProgress /> : <ColumnBar data={componentCounts} title="Component count" />}
             </Box>
 
@@ -48,7 +60,7 @@ function Dashboard() {
                     {errorMessage}
                 </DialogContentText>
             </Dialog>
-        </Container>
+        </Box>
     )
 }
 

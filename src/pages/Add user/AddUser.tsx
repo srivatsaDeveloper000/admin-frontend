@@ -5,6 +5,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import api from '../../api services/api';
 import type { severityType } from '../../types/common.types';
 import { DataGrid } from '@mui/x-data-grid';
+import Sidebar from '../../componnets/Sidebar';
 
 function AddUser() {
 
@@ -88,104 +89,115 @@ function AddUser() {
         return () => { };
     }, []);
 
-    console.log("rowsData", rowsData, columnsData)
-
     return (
-        <Box>
-            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                <Typography >Add user</Typography>
-                <Button id="btn" variant="contained" onClick={() => { setShowAddUser(true) }} startIcon={<PersonAddAltIcon />}>Add user</Button>
+        <Box sx={{
+            display: "flex"
+        }}>
+            <Box sx={{
+                width: "3%",
+                backgroundColor: "green",
+                height: "100vh"
+            }}>
+                <Sidebar />
             </Box>
+            <Box sx={{
+                flex: 1
+            }}>
+                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <Typography >Add user</Typography>
+                    <Button id="btn" variant="contained" onClick={() => { setShowAddUser(true) }} startIcon={<PersonAddAltIcon />}>Add user</Button>
+                </Box>
 
-            <Box>
-                <DataGrid
-                    showToolbar
-                    columns={columnsData}
-                    rows={rowsData}
-                    columnVisibilityModel={{
-                        _id: false,
-                        __v : false
-                    }}
-                />
-            </Box>
-
-            <Dialog
-                open={showAddUser}
-                onClose={() => { setShowAddUser(false) }}
-            >
-                <DialogTitle>Add user</DialogTitle>
-                <DialogContent>
-                    {
-                        showResponse &&
-                        <Alert severity={responseType} sx={{ mb: 2 }}>
-                            {responseMessage}
-                        </Alert>
-                    }
-                    <TextField
-                        label="Name"
-                        type="text"
-                        required
-                        value={componentData.user_name}
-                        onChange={(event) => {
-                            setComponentData({ ...componentData, user_name: event.target.value })
+                <Box>
+                    <DataGrid
+                        showToolbar
+                        columns={columnsData}
+                        rows={rowsData}
+                        columnVisibilityModel={{
+                            _id: false,
+                            __v: false
                         }}
                     />
+                </Box>
 
-                    <TextField
-                        label="Email"
-                        type="email"
-                        required
-                        value={componentData.email}
-                        onChange={(event) => {
-                            setComponentData({ ...componentData, email: event.target.value })
-                        }}
-                    />
+                <Dialog
+                    open={showAddUser}
+                    onClose={() => { setShowAddUser(false) }}
+                >
+                    <DialogTitle>Add user</DialogTitle>
+                    <DialogContent>
+                        {
+                            showResponse &&
+                            <Alert severity={responseType} sx={{ mb: 2 }}>
+                                {responseMessage}
+                            </Alert>
+                        }
+                        <TextField
+                            label="Name"
+                            type="text"
+                            required
+                            value={componentData.user_name}
+                            onChange={(event) => {
+                                setComponentData({ ...componentData, user_name: event.target.value })
+                            }}
+                        />
 
-                    <Autocomplete
-                        disablePortal
-                        options={[...new Set([])]}
-                        sx={{ mt: 2 }}
-                        value={componentData.user_role}
-                        onInputChange={(_: any, newValue: string) => {
-                            setComponentData({ ...componentData, user_role: newValue || "" });
-                        }}
-                        renderInput={(params: any) =>
-                            <TextField
-                                {...params}
-                                label="Role"
-                                fullWidth
-                            />}
-                    />
+                        <TextField
+                            label="Email"
+                            type="email"
+                            required
+                            value={componentData.email}
+                            onChange={(event) => {
+                                setComponentData({ ...componentData, email: event.target.value })
+                            }}
+                        />
 
-                    <TextField
-                        label="password"
-                        type="password"
-                        required
-                        value={componentData.password}
-                        onChange={(event) => {
-                            setComponentData({ ...componentData, password: event.target.value })
-                        }}
-                    />
+                        <Autocomplete
+                            disablePortal
+                            options={[...new Set([])]}
+                            sx={{ mt: 2 }}
+                            value={componentData.user_role}
+                            onInputChange={(_: any, newValue: string) => {
+                                setComponentData({ ...componentData, user_role: newValue || "" });
+                            }}
+                            renderInput={(params: any) =>
+                                <TextField
+                                    {...params}
+                                    label="Role"
+                                    fullWidth
+                                />}
+                        />
 
-                    <FormControl>
-                        <FormLabel >Status</FormLabel>
-                        <RadioGroup
-                            defaultValue="active"
-                            name="radio-buttons-group"
-                            value={componentData.status}
-                            onChange={event => setComponentData({ ...componentData, status: event.target.value })}
-                        >
-                            <FormControlLabel value="active" control={<Radio />} label="Active" />
-                            <FormControlLabel value="Inactive" control={<Radio />} label="inactive" />
-                        </RadioGroup>
-                    </FormControl>
-                </DialogContent>
-                <DialogActions>
-                    <Button id="btn" variant="contained" onClick={cancel_fn}>Cancel</Button>
-                    <Button id="btn" loading={loading} variant="contained" onClick={createUser_fn}>Confirm</Button>
-                </DialogActions>
-            </Dialog>
-        </Box >
+                        <TextField
+                            label="password"
+                            type="password"
+                            required
+                            value={componentData.password}
+                            onChange={(event) => {
+                                setComponentData({ ...componentData, password: event.target.value })
+                            }}
+                        />
+
+                        <FormControl>
+                            <FormLabel >Status</FormLabel>
+                            <RadioGroup
+                                defaultValue="active"
+                                name="radio-buttons-group"
+                                value={componentData.status}
+                                onChange={event => setComponentData({ ...componentData, status: event.target.value })}
+                            >
+                                <FormControlLabel value="active" control={<Radio />} label="Active" />
+                                <FormControlLabel value="Inactive" control={<Radio />} label="inactive" />
+                            </RadioGroup>
+                        </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button id="btn" variant="contained" onClick={cancel_fn}>Cancel</Button>
+                        <Button id="btn" loading={loading} variant="contained" onClick={createUser_fn}>Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+            </Box >
+        </Box>
     )
 }
 
