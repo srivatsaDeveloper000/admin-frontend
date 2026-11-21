@@ -22,6 +22,12 @@ const ColumnBar = ({ data, title }: { data: [], title: string }) => {
     xField,
     yField,
     legend: true,
+    colorField : xField,
+    scale: {
+      color: {
+        range: ['#f4664a', '#faad14', '#a0d911', '#52c41a', '#13c2c2', '#1890ff', '#2f54eb', '#722ed1'],
+      },
+    },
   };
   return <Column {...config} />;
 };
