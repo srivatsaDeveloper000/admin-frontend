@@ -10,6 +10,7 @@ function Dashboard() {
     const [showErrors, setShowErrors] = useState<boolean>(false);
     const [componentCounts, setComponentCounts] = useState<Record<string, any>[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [useRoleCounts, setUserRoleCounts] = useState<Record<string, unknown>[]>([])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,6 +19,7 @@ function Dashboard() {
                 const responseData = await api.get("/dashboard_details");
                 if (responseData) {
                     setComponentCounts(responseData.componentData.components_data.components_counts || []);
+                    setUserRoleCounts(responseData.componentData.users_data.user_roles_count_data || [])
                     setTimeout(() => {
                         setLoading(false)
                     }, 3000);
@@ -36,19 +38,24 @@ function Dashboard() {
 
     return (
         <Box sx={{
-            display :"flex" 
+            display: "flex"
         }}>
             <Box sx={{
-                width :"3%" ,
-                backgroundColor :"green",
-                height :"100vh"
+                width: "3%",
+                backgroundColor: "green",
+                height: "100vh"
             }}>
                 <Sidebar />
             </Box>
             <Box sx={{
-                flex : 1
+                flex: 1
             }}>
-                {loading ? <CircularProgress /> : <ColumnBar data={componentCounts} title="Component count" />}
+                {loading ? <CircularProgress /> :
+                    <>
+                        <ColumnBar data={componentCounts} title="Components count" />
+                        <ColumnBar data={useRoleCounts} title="User roles" />
+                    </>
+                }
             </Box>
 
             {/*  for showing the errors if any api failed or anything */}
