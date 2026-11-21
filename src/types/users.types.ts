@@ -4,5 +4,6 @@ export type userTypes = {
     user_name : string,
     password : string,
     email : string ,
-    contact_number : string
+    contact_number : string,
+    type? : string
 }

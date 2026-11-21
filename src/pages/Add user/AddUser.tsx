@@ -21,7 +21,8 @@ function AddUser() {
         status: "",
         email: "",
         password: "",
-        contact_number: ""
+        contact_number: "",
+        type: "single"
     });
     const [showResponse, setShowResponse] = useState<boolean>(false);
     const [responseMessage, setResponseMessage] = useState<string>("");
@@ -30,8 +31,9 @@ function AddUser() {
     const [columnsData, setColumnsData] = useState<Record<string, any>[]>([]);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [passwordType, setPasswordType] = useState<string>("password");
+    const [file, setFile] = useState<File | null>(null);
 
-    const columnsActions ={
+    const columnsActions = {
         field: "actions",
         headerName: "Actions",
         width: 110,
@@ -47,13 +49,18 @@ function AddUser() {
                 </IconButton>
             </>
         )
-    }
+    };
 
     //  function to create the user
     const createUser_fn = async () => {
-        setLoading(true)
+        setLoading(true);
         try {
-            const responseData = await api.post("/create_user", componentData)
+            const data = {
+                type: "bulk",
+                users: file
+            };
+
+            const responseData = await api.post("/create_user", componentData.type === "single" ? componentData : data)
             if (responseData) {
                 setLoading(false);
                 setShowResponse(true);
@@ -84,7 +91,19 @@ function AddUser() {
             password: "",
             contact_number: ""
         });
+        setFile(null);
         setShowAddUser(false);
+    };
+
+    //  for file upload
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files?.[0];
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        const responseData = await api.post("/upload_file", formData);
+        if (responseData) {
+            setFile(responseData.componentData.file_data || [])
+        }
     };
 
     //  for getting all the users data
@@ -183,93 +202,131 @@ function AddUser() {
                                 {responseMessage}
                             </Alert>
                         }
-                        <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Name"
-                                    required
-                                    value={componentData.user_name}
-                                    onChange={(event) => {
-                                        setComponentData({ ...componentData, user_name: event.target.value })
-                                    }}
-                                />
+
+                        <Box>
+                            <FormControl>
+                                <RadioGroup
+                                    defaultValue="single"
+                                    name="radio-buttons-group"
+                                    value={componentData.type}
+                                    onChange={event => setComponentData({ ...componentData, type: event.target.value })}
+                                    row
+                                >
+                                    <FormControlLabel value="single" control={<Radio />} label="Single user" />
+                                    <FormControlLabel value="bulk" control={<Radio />} label="Bulk user" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Box>
+
+                        {componentData.type === "single" && <>
+                            <Grid container spacing={2}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Name"
+                                        required
+                                        value={componentData.user_name}
+                                        onChange={(event) => {
+                                            setComponentData({ ...componentData, user_name: event.target.value })
+                                        }}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Email"
+                                        type="email"
+                                        required
+                                        value={componentData.email}
+                                        onChange={(event) => {
+                                            setComponentData({ ...componentData, email: event.target.value })
+                                        }}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Contact number"
+                                        required
+                                        value={componentData.contact_number}
+                                        onChange={(event) => {
+                                            setComponentData({ ...componentData, contact_number: event.target.value })
+                                        }}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <Autocomplete
+                                        fullWidth
+                                        disablePortal
+                                        options={[...new Set([])]}
+                                        value={componentData.user_role}
+                                        onInputChange={(_: any, newValue: string) => {
+                                            setComponentData({ ...componentData, user_role: newValue || "" });
+                                        }}
+                                        renderInput={(params: any) => (
+                                            <TextField {...params} label="Role" />
+                                        )}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        fullWidth
+                                        label="Password"
+                                        type={passwordType}
+                                        required
+                                        value={componentData.password}
+                                        onChange={(event) => {
+                                            setComponentData({ ...componentData, password: event.target.value })
+                                        }}
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: <InputAdornment position="start">{
+                                                    showPassword ? <VisibilityOffIcon sx={{ cursor: "pointer" }} onClick={() => { handle_password_type(false, "password") }} /> : <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => { handle_password_type(true, "text") }} />
+                                                }</InputAdornment>,
+                                            },
+                                        }}
+                                    />
+                                </Grid>
                             </Grid>
 
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Email"
-                                    type="email"
-                                    required
-                                    value={componentData.email}
-                                    onChange={(event) => {
-                                        setComponentData({ ...componentData, email: event.target.value })
-                                    }}
-                                />
-                            </Grid>
+                            <FormControl>
+                                <FormLabel >Status</FormLabel>
+                                <RadioGroup
+                                    defaultValue="active"
+                                    name="radio-buttons-group"
+                                    value={componentData.status}
+                                    onChange={event => setComponentData({ ...componentData, status: event.target.value })}
+                                    row
+                                >
+                                    <FormControlLabel value="active" control={<Radio />} label="Active" />
+                                    <FormControlLabel value="Inactive" control={<Radio />} label="Inactive" />
+                                </RadioGroup>
+                            </FormControl>
+                        </>}
 
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Contact number"
-                                    required
-                                    value={componentData.contact_number}
-                                    onChange={(event) => {
-                                        setComponentData({ ...componentData, contact_number: event.target.value })
-                                    }}
-                                />
-                            </Grid>
 
-                            <Grid size={{ xs: 12, sm: 6 }}>
-                                <Autocomplete
-                                    fullWidth
-                                    disablePortal
-                                    options={[...new Set([])]}
-                                    value={componentData.user_role}
-                                    onInputChange={(_: any, newValue: string) => {
-                                        setComponentData({ ...componentData, user_role: newValue || "" });
-                                    }}
-                                    renderInput={(params: any) => (
-                                        <TextField {...params} label="Role" />
-                                    )}
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, sm: 6 }}>
+                        {componentData.type !== "single" &&
+                            <>
+                                <Alert severity="info" >
+                                    Please refer above excel file for the sample data and columns
+                                    <a download href="/public/sample/sample_users.xlsx">Sample.xlsx</a>
+                                </Alert>
                                 <TextField
-                                    fullWidth
-                                    label="Password"
-                                    type={passwordType}
-                                    required
-                                    value={componentData.password}
-                                    onChange={(event) => {
-                                        setComponentData({ ...componentData, password: event.target.value })
-                                    }}
+                                    type="file"
+                                    onChange={handleFileChange}
                                     slotProps={{
-                                        input: {
-                                            endAdornment: <InputAdornment position="start">{
-                                                showPassword ? <VisibilityOffIcon sx={{ cursor: "pointer" }} onClick={() => { handle_password_type(false, "password") }} /> : <VisibilityIcon sx={{ cursor: "pointer" }} onClick={() => { handle_password_type(true, "text") }} />
-                                            }</InputAdornment>,
-                                        },
+                                        htmlInput: {
+                                            accept: ".xlsx, .xls, .csv"
+                                        }
                                     }}
                                 />
-                            </Grid>
-                        </Grid>
+                            </>
+                        }
 
-                        <FormControl>
-                            <FormLabel >Status</FormLabel>
-                            <RadioGroup
-                                defaultValue="active"
-                                name="radio-buttons-group"
-                                value={componentData.status}
-                                onChange={event => setComponentData({ ...componentData, status: event.target.value })}
-                                row
-                            >
-                                <FormControlLabel value="active" control={<Radio />} label="Active" />
-                                <FormControlLabel value="Inactive" control={<Radio />} label="inactive" />
-                            </RadioGroup>
-                        </FormControl>
                     </DialogContent>
                     <DialogActions>
                         <Button id="btn" variant="contained" onClick={cancel_fn} sx={{ textTransform: "capitalize" }}>Cancel</Button>
