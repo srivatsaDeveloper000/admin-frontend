@@ -6,7 +6,7 @@ const AreaChart = () => {
             type: 'fetch',
             value: 'https://assets.antv.antgroup.com/g2/aapl.json',
         },
-        xField: (d) => new Date(d.date),
+        xField: (d: any) => new Date(d.date),
         yField: 'close',
     };
 
