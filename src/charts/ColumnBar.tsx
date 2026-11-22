@@ -1,7 +1,11 @@
 import { Column } from '@ant-design/plots';
 import { useEffect, useState } from 'react';
 
-const ColumnBar = ({ data, title }: { data: [], title: string }) => {
+interface ColumnBarProps {
+    data: Record<string, any>[];
+}
+
+const ColumnBar = ({ data, title }: { data: ColumnBarProps[], title: string }) => {
 
   const [xField, setXField] = useState<string>("");
   const [yField, setYField] = useState<string>("");
@@ -11,7 +15,7 @@ const ColumnBar = ({ data, title }: { data: [], title: string }) => {
       return
     };
 
-    const data_keys :string[] = Object.keys(data[0] || []);
+    const data_keys :string[] = Object.keys(data[0] || {});
     setYField(data_keys[0])
     setXField(data_keys[1])
   }, [data]);

@@ -10,6 +10,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
+import axios from 'axios';
 
 function AddUser() {
 
@@ -32,6 +33,8 @@ function AddUser() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [passwordType, setPasswordType] = useState<string>("password");
     const [file, setFile] = useState<File | null>(null);
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [deleteID, setDeleteId] = useState<string>("");
 
     const columnsActions = {
         field: "actions",
@@ -45,7 +48,7 @@ function AddUser() {
                     <EditSquareIcon />
                 </IconButton>
                 <IconButton aria-label="Delete" size="small">
-                    <DeleteIcon />
+                    <DeleteIcon onClick={() => { setDeleteId(params.row.id); setShowDelete(true); }} />
                 </IconButton>
             </>
         )
@@ -81,6 +84,35 @@ function AddUser() {
             setLoading(false)
         };
     };
+
+    //  for deleting the user
+    const handle_delete_user = async () => {
+        setLoading(true)
+        try {
+            const responseData = await api.delete(`/delete_user/${deleteID}`);
+            setLoading(false)
+            if (responseData) {
+                setShowResponse(true)
+                const type: string = responseData.type.toLowerCase();
+                setResponseMessage(responseData.message || "");
+                if (["success", "error", "warning", "info"].includes(type)) {
+                    setResponseType(type as severityType);
+                };
+                setTimeout(() => {
+                    if (responseData.type === "Success") {
+                        setShowResponse(false);
+                        setShowDelete(false);
+                    }
+                }, 3000);
+            }
+        } catch (error: unknown) {
+            setLoading(false)
+            if (axios.isAxiosError(error)) {
+                console.log(error.response?.data)
+                console.log(error.message)
+            }
+        }
+    }
 
     const cancel_fn = () => {
         setComponentData({
@@ -331,6 +363,35 @@ function AddUser() {
                     <DialogActions>
                         <Button id="btn" variant="contained" onClick={cancel_fn} sx={{ textTransform: "capitalize" }}>Cancel</Button>
                         <Button id="btn" loading={loading} variant="contained" onClick={createUser_fn} sx={{ textTransform: "capitalize" }}>Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* </Dialog> dialog for deleting the user */}
+                <Dialog
+                    open={showDelete}
+                    onClose={() => { setShowDelete(false) }}
+                    fullWidth
+                    maxWidth="sm"
+                >
+                    <DialogTitle>Delete user</DialogTitle>
+                    <DialogContent>
+                        {
+                            showResponse &&
+                            <Alert severity={responseType} sx={{ mb: 2 }}>
+                                {responseMessage}
+                            </Alert>
+                        }
+
+                        Do you want to delete user {deleteID}  ?
+                    </DialogContent>
+                    <DialogActions>
+                        <Button id="btn" variant="contained" sx={{ textTransform: "capitalize" }}
+                            onClick={() => { setShowDelete(false) }}>
+                            Cancel
+                        </Button>
+                        <Button loading={loading} id="btn" variant="contained" sx={{ textTransform: "capitalize" }} onClick={handle_delete_user}>
+                            Delete
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </Box >
