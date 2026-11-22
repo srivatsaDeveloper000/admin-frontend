@@ -11,7 +11,7 @@ const ColumnBar = ({ data, title }: { data: [], title: string }) => {
       return
     };
 
-    const data_keys = Object.keys(data[0] || []);
+    const data_keys :string[] = Object.keys(data[0] || []);
     setYField(data_keys[0])
     setXField(data_keys[1])
   }, [data]);

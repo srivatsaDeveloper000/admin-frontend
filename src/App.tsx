@@ -10,7 +10,7 @@ function App() {
       <Routes>
         <Route path="/component_master" element={<ComponentMaster />} />
         <Route path="/add_user" element={<AddUser />} />
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/admin" element={<Dashboard />} />
         <Route path="/log_master" element={<LogMaster />} />
       </Routes>
     </BrowserRouter>
